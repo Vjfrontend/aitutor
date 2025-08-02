@@ -7,7 +7,7 @@ export async function POST(req: Request) {
       headers: {
         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY!}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'http://localhost:3000', // required by OpenRouter
+        'HTTP-Referer': 'https://aitutor1.vercel.app/', // required by OpenRouter
       },
       body: JSON.stringify({
         model: 'openai/gpt-3.5-turbo', // must be prefixed with openai/
