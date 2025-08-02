@@ -1,21 +1,33 @@
 export async function POST(req: Request) {
-  const { question } = await req.json();
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  try {
+    const { question } = await req.json();
 
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY!}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'http://localhost:3000', // required by OpenRouter
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-3.5-turbo', // must be prefixed with openai/
+        messages: [{ role: 'user', content: question }],
+      }),
+    });
 
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-    'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'http://localhost:3000', // important for OpenRouter free use
-    },
-    body: JSON.stringify({
-      model: 'openai/gpt-3.5-turbo',
-      messages: [{ role: 'user', content: question }],
-    }),
-  });
+    const data = await response.json();
 
-  const data = await res.json();
-  return Response.json({ answer: data.choices?.[0]?.message?.content || 'No response' });
+    // ✅ Print the full raw response to terminal
+    console.log('🧪 OpenRouter Raw Response:', JSON.stringify(data, null, 2));
+
+    if (!data || !data.choices || data.choices.length === 0) {
+      return Response.json({ answer: 'No AI response received from OpenRouter.' });
+    }
+
+    const answer = data.choices[0].message.content;
+    return Response.json({ answer });
+  } catch (err: any) {
+    console.error('❌ Server Error:', err);
+    return Response.json({ error: 'Internal Server Error: ' + err.message }, { status: 500 });
+  }
 }
