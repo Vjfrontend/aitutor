@@ -1,7 +1,8 @@
 export const metadata = {
-  title: 'ai-tutor',
-  description: 'mae and  victors ai ptoject',
+  title: 'AI Tutor by Mae & Victor',
+  description: 'A hands-on, signup-free AI learning tool crafted for curious minds by Mae and Victor.',
 }
+
 
 
 import Hero from '@/components/hero-home'
